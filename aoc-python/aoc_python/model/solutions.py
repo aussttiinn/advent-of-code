@@ -45,4 +45,29 @@ class Day1Part1(Solution):
         right.sort()
 
         return sum([abs(left[i]-right[i]) for i in range(len(left))])
+    
+class Day1Part2(Solution):
+    def __init__(self):
+        super().__init__(2024,1,2)
+
+    def countOccurences(self, arr:list, obj:Any) -> int:
+        """Count the number of a occurences of a given object inside a list"""
+        occurences = 0
+        for o in arr:
+            if o == obj:
+                occurences += 1
+        return occurences 
+    
+    def run(self):
+        left = [int(re.split("\\s+", s)[0]) for s in self.input]
+        right = [int(re.split("\\s+", s)[1]) for s in self.input]
+
+        similarity = 0 
+        for o in left:
+            similarity += o*self.countOccurences(right, o)
+        return similarity
+
+
+
+
 
