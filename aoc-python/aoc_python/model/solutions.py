@@ -83,7 +83,7 @@ class Day2Part1(Solution):
     def __init__(self):
         super().__init__(2024, 2, 1, self.InputFormat.txt)
 
-    def safeRow(self, row:list[int]) -> True:
+    def safeRow(self, row:list[int]) -> bool:
         """
         - The levels are either all increasing or all decreasing.
         - Any two adjacent levels differ by at least one and at most three.
@@ -97,9 +97,36 @@ class Day2Part1(Solution):
     def run(self): 
         array = [[int(i) for i in re.split("\\s+", s)] for s in self.input]
         return [self.safeRow(row) for row in array].count(True)
+    
+class Day2Part2(Solution):
+    def __init__(self):
+        super().__init__(2024, 2, 2, self.InputFormat.txt)
+
+    def safeRow(self, row:list[int]) -> bool:
+        """
+        - The levels are either all increasing or all decreasing.
+        - Any two adjacent levels differ by at least one and at most three.
+        """
+        all_inc_or_dec = sorted(row.copy(), reverse=False) == row or sorted(row.copy(), reverse=True) == row
+        for i in range(len(row)-1):
+            if not all_inc_or_dec or not (abs(row[i]-row[i+1])>=1 and abs(row[i]-row[i+1])<=3):
+                return False
+        return True
+    
+    def safeRowOneRemoved(self, row:list[int]) -> bool:
+        """A row is safe if removing any given element is safe."""
+        for i in range(len(row)):
+            i_removed = row[:i]+row[i+1:]
+            if self.safeRow(i_removed):
+                return True
+        return False
+
+    def run(self): 
+        array = [[int(i) for i in re.split("\\s+", s)] for s in self.input]
+        return [self.safeRowOneRemoved(row) for row in array].count(True)
 
 if __name__ == "__main__":
-    print(Day2Part1().run())
+    print(Day2Part2().run())
 
 
 
