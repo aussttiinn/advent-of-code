@@ -3,8 +3,8 @@ import org.aoc.model.Solution;
 
 import java.util.ArrayList;
 
-public class D1 extends Solution {
-    public D1() {
+public class D1P1 extends Solution {
+    public D1P1() {
         super(2024, 1, 1);
     }
 

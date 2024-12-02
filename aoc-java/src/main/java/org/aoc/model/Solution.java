@@ -49,6 +49,7 @@ public abstract class Solution {
             }
 
             Path inputFile = inputFiles.getFirst();
+            logger.info("loading {}", inputFile);
             String fileExtension = getFileExtension(inputFile.toString());
 
             if ("json".equalsIgnoreCase(fileExtension)) {

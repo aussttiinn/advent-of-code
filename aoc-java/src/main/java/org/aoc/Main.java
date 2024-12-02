@@ -7,6 +7,7 @@ public class Main {
     public static Logger logger = LoggerFactory.getLogger("AOC_MAIN");
 
     public static void main(String[] args) {
-        logger.info("2024_DAY1_PART1: {}", new D1().run());
+        logger.info("2024_DAY1_PART1: {}", new D1P1().run());
+        logger.info("2024_DAY1_PART2: {}", new D1P2().run());
     }
 }
