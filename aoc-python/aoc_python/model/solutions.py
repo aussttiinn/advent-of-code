@@ -230,9 +230,14 @@ class Day4Part1(Solution):
             self.parent_loc:tuple=parent_loc
         
         def getElement(self, i, j):
-            if i<0 or j<0:
+            try:
+                return self.arr[i][j]
+            except IndexError:
                 return None
-            return self.arr[i][j]
+        
+        def getSize(self) -> tuple[int, int]:
+            largest = max([len(a) for a in self.arr])
+            return len(self.arr), largest
 
         def __str__(self):
             return str(self.arr)
@@ -247,11 +252,18 @@ class Day4Part1(Solution):
 
     def __init__(self):
         super().__init__(2024, 4, 1, self.InputFormat.txt)
-    
+
+    def findWordInMatrix(self, word, matrix:Matrix):
+        matches = {} # key = tuple of location in parent, value = 
+        i, j = matrix.getSize()
+        for idx in range(i):
+            for jdx in range(j):
+                print(matrix.getNeighbors(i, j).getSize())
+
     def run(self):
         arr = [list(s) for s in self.input]
         m = self.Matrix(arr)
-        print(str(m.getNeighbors(0,0)))
+        self.findWordInMatrix("xmas", m)
 
 if __name__ == "__main__":
     Day4Part1().run()
