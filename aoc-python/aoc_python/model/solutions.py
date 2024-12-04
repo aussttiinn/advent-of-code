@@ -19,6 +19,7 @@ class Solution(ABC):
                 data = json.loads(f)
             elif format == self.InputFormat.txt:
                 data = [s.strip() for s in f.readlines()]
+                # data = f.read()
             else:
                 self.logger.error(f"Format ``{format}`` is not supported.")
         return data  
@@ -125,8 +126,104 @@ class Day2Part2(Solution):
         array = [[int(i) for i in re.split("\\s+", s)] for s in self.input]
         return [self.safeRowOneRemoved(row) for row in array].count(True)
 
+class Day1Part2_2023(Solution):
+    def __init__(self):
+        super().__init__(2023, 1, 2, self.InputFormat.txt)
+
+    def extract(self, line:str) -> list:
+        def word_to_int(word:str) -> int:
+            valid = {
+                "one": 1, 
+                "two": 2, 
+                "three": 3, 
+                "four": 4, 
+                "five": 5, 
+                "six": 6, 
+                "seven": 7, 
+                "eight": 8, 
+                "nine": 9, 
+                "zero": 0
+            }
+            return valid.get(word)
+        
+        def get_all_substrings(string:str, length:int) -> list[str]:
+            substrings = []
+            for j in range(len(string)-length):
+                for i in range(len(string)-length):
+                    sub = string[i:i+length]
+                    substrings.append(sub)
+            return substrings
+         
+        def get_all_substrings_v2(string:str, min_length: int, max_length:int):
+            substrings = []
+            for i in range(min_length, max_length):
+                substrings.extend(get_all_substrings(string, i))
+            return substrings
+
+        substrings:list[str] = get_all_substrings_v2(line, 3, 8)
+        for s in substrings:
+            if s.isalpha():
+                print(s)
+
+    def run(self):
+        self.extract(self.input[0])
+
+import re 
+class Day3Part1(Solution):
+    def __init__(self):
+        super().__init__(2024, 3, 1, self.InputFormat.txt)
+    
+    def get_nums(self, match:str) -> tuple[int, int]:
+        return (
+            int(match.lower().split(",")[0].replace("mul(","").replace(")","")),
+            int(match.lower().split(",")[-1].replace("mul(","").replace(")",""))
+        )
+
+    def run(self):
+        pattern = r"(mul\([0-9]*,[0-9]*\))"
+        matches:list[str] = re.findall(pattern, self.input)
+        nums = [self.get_nums(s) for s in matches]
+        
+        result = 0 
+        for pair in nums:
+            result += pair[0]*pair[1]
+        print(result)
+        return result
+    
+class Day3Part2(Solution):
+    def __init__(self):
+        super().__init__(2024, 3, 2, self.InputFormat.txt)
+    
+    def run(self):
+        def get_nums(match:str) -> tuple[int, int]:
+            return (
+                int(match.lower().split(",")[0].replace("mul(","").replace(")","")),
+                int(match.lower().split(",")[-1].replace("mul(","").replace(")",""))
+            )
+
+        complete_pattern = r"(mul\([0-9]*,[0-9]*\)|don't\(\)|do\(\))"
+        mul_pattern = r"(mul\([0-9]*,[0-9]*\))"
+        matches:list[str] = re.findall(complete_pattern, self.input)
+
+        sdf = []
+        applyNext=True
+        for i in range(len(matches)):
+            if re.search(mul_pattern, matches[i]) and applyNext:
+                sdf.append(matches[i])
+            if matches[i].lower() == "don't()":
+                applyNext=False
+            elif matches[i].lower() == "do()":
+                applyNext=True
+        
+        sdf = [get_nums(s) for s in sdf]
+        result = 0 
+        for i in sdf:
+            result += i[0]*i[1]
+        print(result)
+        return result
+
 if __name__ == "__main__":
-    print(Day2Part2().run())
+    Day3Part2().run()
 
 
 
