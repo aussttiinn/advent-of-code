@@ -221,9 +221,40 @@ class Day3Part2(Solution):
             result += i[0]*i[1]
         print(result)
         return result
+    
+class Day4Part1(Solution):
+    class Matrix:
+        def __init__(self, arr:list[list], parent=None, parent_loc=None):
+            self.arr:list[list] = arr
+            self.parent:Day4Part1.Matrix = parent
+            self.parent_loc:tuple=parent_loc
+        
+        def getElement(self, i, j):
+            if i<0 or j<0:
+                return None
+            return self.arr[i][j]
+
+        def __str__(self):
+            return str(self.arr)
+        
+        def getNeighbors(self, i, j):
+            arr = [
+                [self.getElement(i-1, j-1), self.getElement(i-1, j), self.getElement(i-1, j+1)],
+                [self.getElement(i, j-1), self.getElement(i, j), self.getElement(i, j+1)],
+                [self.getElement(i+1, j-1), self.getElement(i+1, j), self.getElement(i+1, j+1)],
+            ]
+            return Day4Part1.Matrix(arr, parent=self, parent_loc=(i, j))
+
+    def __init__(self):
+        super().__init__(2024, 4, 1, self.InputFormat.txt)
+    
+    def run(self):
+        arr = [list(s) for s in self.input]
+        m = self.Matrix(arr)
+        print(str(m.getNeighbors(0,0)))
 
 if __name__ == "__main__":
-    Day3Part2().run()
+    Day4Part1().run()
 
 
 
