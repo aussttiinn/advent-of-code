@@ -1,8 +1,9 @@
-from aoc_python.model import Input
+from model import Input
+from enum import Enum
 
 input = Input.read(2024, 4)
 
-class Directions:
+class Directions(Enum):
     NORTH = (-1, 0)         # Up
     SOUTH = (1, 0)         # Down
     EAST = (0, 1)          # Right
@@ -14,6 +15,8 @@ class Directions:
     
     ALL = [NORTH, SOUTH, EAST, WEST, NORTHEAST, 
                 NORTHWEST, SOUTHEAST, SOUTHWEST]
+    
+    DIAGONAL = [NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST]
     
     @classmethod
     def fromCoord(cls, i, j):
@@ -28,6 +31,13 @@ class Directions:
             cls.SOUTHWEST: "SOUTHWEST"
         }
         return direction_map.get((i, j), "UNKNOWN DIRECTION")
+    
+    @classmethod
+    def fromCoord2(cls, i, j) -> tuple[str,tuple]:
+        for member in cls:
+            if member.value == (i,j):
+                return member.name, member.value
+        return None, None
     
 class Matrix:
     def _isRectangular(self, arr:list[list]):
@@ -52,7 +62,7 @@ class Matrix:
         
         adj = []        
         for d in directions: 
-            row, col = i+self.size[0], j+self.size[1]
+            row, col = i+d[0], j+d[1]
             if self._inBounds(row, col):
                 adj.append((row, col))
         return adj
@@ -78,7 +88,7 @@ class Matrix:
         prev += f"{self.getElement(i, j)}"
         path = path + [(i,j)]
         return self.getValidPath((i, j), direction, prev, path)
-
+    
     def prettyPrint(self):
         for row in self.arr:
             print(" ".join(f"{element:4}" for element in row))
@@ -90,7 +100,7 @@ def part1():
     paths = [] 
     for i in range(m.size[0]):
         for j in range(m.size[1]):
-            for direction in Directions.ALL:
+            for direction in Directions.ALL.value:
                 path = m.getValidPath((i,j), direction)
                 paths.append(path)
                 
@@ -100,9 +110,39 @@ def part1():
                     count+=1
     print(count)
 
+def checkValidX(m: Matrix, adjacency: list, center: tuple):
+    adjacency_vals = [m.getElement(*x, "").lower() for x in adjacency]
+    if adjacency_vals.count('s') != 2 or adjacency_vals.count('m') != 2:
+        return False
+    
+    directions = {}
+    for adj in adjacency:
+        i, j = center[0] - adj[0], center[1] - adj[1]
+        directions[(i, j)] = m.getElement(*adj).lower()
+
+    for (i, j), value in directions.items():
+        x, y = -i, -j 
+        opposite_value = directions.get((x, y), None)
+        if value == 's' and opposite_value != 'm':
+            return False
+        if value == 'm' and opposite_value != 's':
+            return False
+
+    return True
+
 def part2():
     m = Matrix([list(line) for line in input])
+    i, j = m.size
+    count = 0
+    for idx in range(i):
+        for jdx in range(j):
+            curr = m.getElement(idx,jdx,default="")
+            if curr.lower()=="a":
+                adj = m.getAdjacent(idx,jdx,directions=Directions.DIAGONAL.value)
+                if checkValidX(m, adj, (idx,jdx)):
+                    count+=1
+    print(count)
 
-    
+
 if __name__ == "__main__": 
-    part1()
+    part2()
