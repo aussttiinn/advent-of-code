@@ -77,20 +77,25 @@ class Guard:
         self.start_loc = y
         self.curr_loc = self.start_loc
         self.curr_pos: GuardPositions = self.start_guardpos
-    
-    def move(self, d: Directions) -> bool:
+
+    def move(self, d: Directions, states:set=set()) -> bool:
         i, j = self.curr_loc
         adj = self.lab.getAdjacent(i, j, [d])
         if adj:
             new_i, new_j = adj[0]
-            if self.lab.getElement(new_i, new_j) == "#":
-                return self.move(self.curr_pos.rotateDirection())
+            x = ((new_i, new_j), GuardPositions.fromDirection(d))
+            if x in states:
+                return False, states
+            if self.lab.getElement(new_i, new_j) in ["#", "O"]:
+                return self.move(self.curr_pos.rotateDirection(), states=states)
+            
+            states.add(x)
             self.curr_loc = (new_i, new_j)
             self.curr_pos = GuardPositions.fromDirection(d)
             self.lab.arr[i][j], self.lab.arr[new_i][new_j] = self.lab.arr[new_i][new_j], self.lab.arr[i][j]
             self.lab.arr[new_i][new_j] = self.curr_pos.value
-            return True
-        return False
+            return True, states
+        return False, states
 
     def walk(self):
         """Loop over moves, performing patrols."""
@@ -98,22 +103,26 @@ class Guard:
         visited.add(self.curr_loc) 
         while True:
             d = self.curr_pos.toDirection()
-            keepGoing = self.move(d)
+            keepGoing, states = self.move(d)
             visited.add(self.curr_loc)
-            print(f"Moved to {self.curr_loc}, facing {self.curr_pos.name}")
+            # print(f"Moved to {self.curr_loc}, facing {self.curr_pos.name}")
             if not keepGoing:
                 break
-        return visited
+        return visited, states
 
 def part1():
     l = Lab([list(line) for line in input])
     g = Guard(l)
 
-    visited = g.walk()
-    print(len(visited))
+    visited, _ = g.walk()
+    return len(visited)
 
+def part2():
+    
 
+    return "not implemented"
 
 if __name__ == "__main__": 
-    part1()
+    print("Part1: ", part1())
+    print("Part2: ", part2())
 
