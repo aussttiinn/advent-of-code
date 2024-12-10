@@ -17,11 +17,12 @@ class Page:
             return within.index(self.number) <= within.index(num)
         except ValueError as e:
             return default
+    
 
 class ManualUpdate:
     def __init__(self, update: list):
         self.update = update
-    
+
     def getMiddleNumbers(self):
         if len(self.update) == 0:
             return None
@@ -37,16 +38,19 @@ class ManualUpdate:
                 return False
         return True
 
-    def enforceOrder(self, rules=list[tuple]):
-        for i in range(len(rules)):
-            rule = rules[i]
-            first, second = rule
-            if not Page(first).isBefore(second, within=self.update):
-                i, j = self.update.index(first), self.update.index(second)
-                self.update[i], self.update[j] = self.update[j], self.update[i]
+    def validate2(self, rules=list[tuple]):
+        while True:
+            changed = False
+            for rule in rules: 
+                first, second = rule
+                if not Page(first).isBefore(second, within=self.update):
+                    i, j = self.update.index(first), self.update.index(second)
+                    self.update[i], self.update[j] = self.update[j], self.update[i]
+                    changed=True
+            if not changed:
+                break
 
-        
-
+    
 def part1():
     rules, updates = transform_input(input)
     sum = 0     
@@ -58,16 +62,17 @@ def part1():
 
 def part2():
     rules, updates = transform_input(input)
-    sum = 0     
+    count = 0 
     for update in updates:
         mu = ManualUpdate(update)
-        if not mu.validate(rules=rules):
-            mu.enforceOrder(rules)
-            sum += mu.getMiddleNumbers()
-    return sum
-
+        if mu.validate(rules):
+            continue
+        mu.validate2(rules)
+        count += mu.getMiddleNumbers()
+    return count
 
 if __name__ == "__main__": 
-    print(part2())
+    print("Part1: ", part1())
+    print("Part2: ", part2())
 
     
