@@ -68,6 +68,10 @@ class Lab(Matrix):
                 if e in positions.value:
                     return (GuardPositions.fromItem(e), (idx, jdx))
         return None, (-1, -1)
+    
+    def copy(self):
+        arr = [row.copy() for row in self.arr]
+        return Lab(arr)
 
 class Guard: 
     def __init__(self, lab: Lab):
@@ -78,7 +82,9 @@ class Guard:
         self.curr_loc = self.start_loc
         self.curr_pos: GuardPositions = self.start_guardpos
 
-    def move(self, d: Directions, states:set=set()) -> bool:
+    def move(self, d: Directions, states:set=None) -> bool:
+        if not states:
+            states = set()
         i, j = self.curr_loc
         adj = self.lab.getAdjacent(i, j, [d])
         if adj:
@@ -117,12 +123,6 @@ def part1():
     visited, _ = g.walk()
     return len(visited)
 
-def part2():
-    
-
-    return "not implemented"
-
 if __name__ == "__main__": 
     print("Part1: ", part1())
-    print("Part2: ", part2())
 
